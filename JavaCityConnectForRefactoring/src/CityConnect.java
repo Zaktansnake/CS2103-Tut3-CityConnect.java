@@ -48,7 +48,7 @@ public class CityConnect {
 	private static final String MESSAGE_NO_ROUTE = "No route exists from %1$s to %2$s!";
 	private static final String MESSAGE_ADDED = "Route from %1$s to %2$s with distance %3$skm added";
 	private static final String MESSAGE_INVALID_FORMAT = "invalid command format :%1$s";
-	private static final String WELCOME_MESSAGE = "Welcome to SimpleRouteStore!";
+	private static final String MESSAGE_WELCOME = "Welcome to SimpleRouteStore!";
 	private static final String MESSAGE_NO_SPACE = "No more space to store locations";
 
 	// These are the possible command types
@@ -72,7 +72,8 @@ public class CityConnect {
 	private static final int PARAM_POSITION_DISTANCE = 2;
 
 	// This array will be used to store the routes
-	private static String[][] route = new String[10][3];
+	private static final int MAX_ROUTES = 10;
+	private static String[][] route = new String[MAX_ROUTES][3];
 
 	/*
 	 * These are the locations at which various components of the route will be
@@ -98,7 +99,7 @@ public class CityConnect {
 	 * ====================================================================
 	 */
 	public static void main(String[] args) {
-		showToUser(WELCOME_MESSAGE);
+		showToUser(MESSAGE_WELCOME);
 		while (true) {
 			System.out.print("Enter command:");
 			String command = scanner.nextLine();
@@ -203,9 +204,7 @@ public class CityConnect {
 		if (position == NOT_FOUND) {
 			return String.format(MESSAGE_NO_ROUTE, newStartLocation,
 					newEndLocation);
-		} 
-		else 
-		{
+		} else {
 			return String.format(MESSAGE_DISTANCE, newStartLocation, newEndLocation,
 					route[position][STORAGE_POSITION_DISTANCE]);
 		}
@@ -225,7 +224,7 @@ public class CityConnect {
 
 			if (existing_start_location == null) { //beginning of empty slots
 				return NOT_FOUND; 
-			} else if (sameRoute(existing_start_location, existing_end_location,
+			} else if (isSameRoute(existing_start_location, existing_end_location,
 					newStartLocation, newEndLocation)) { 
 				return i;
 			}
@@ -258,7 +257,7 @@ public class CityConnect {
 			return String.format(MESSAGE_INVALID_FORMAT, userCommand);
 		}
 
-		int slotPosition = location(newStartLocation, newEndLocation);
+		int slotPosition = slotLocation(newStartLocation, newEndLocation);
 
 		if (slotPosition == SLOT_UNAVAILABLE){
 			return MESSAGE_NO_SPACE;
@@ -283,7 +282,7 @@ public class CityConnect {
 	 *   newStartLocation and newEndLocation. Returns SLOT_UNAVAILABLE if
 	 *   no suitable slot is found.
 	 */
-	private static int location(String newStartLocation,
+	private static int slotLocation(String newStartLocation,
 			String newEndLocation) {
 		
 		for (int i = 0; i < route.length; i++) {
@@ -293,7 +292,7 @@ public class CityConnect {
 
 			if (existingStartLocation == null) { // empty slot
 				return i;
-			} else if (sameRoute(existingStartLocation, existingEndLocation,
+			} else if (isSameRoute(existingStartLocation, existingEndLocation,
 					newStartLocation, newEndLocation)) {
 				return i;
 			}
@@ -304,7 +303,7 @@ public class CityConnect {
 	/**
 	 * This operation checks if two routes represents the same route.
 	 */
-	private static boolean sameRoute(String startLocation1,
+	private static boolean isSameRoute(String startLocation1,
 			String endLocation1, String startLocation2, String endLocation2) {
 
 		if ((startLocation1 == null) || (endLocation1 == null)
